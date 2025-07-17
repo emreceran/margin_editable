@@ -1,0 +1,27 @@
+# Byte-code files
+*.pyc
+__pycache__/
+
+# Odoo specific files and directories
+*.log
+.DS_Store
+*.swp
+*.bak
+*.orig
+*.rej
+/data/
+/filestore/
+/sessions/
+/run/
+/tests/
+/doc/
+/local/
+
+# Environment variables file
+.env
+
+# Editor specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
