@@ -8,33 +8,40 @@ from odoo.exceptions import UserError
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    # 'margin' alanı yerine yeni bir alan tanımlıyoruz: margin_yeni
     margin_yeni = fields.Float(
-        string='Kar (%)',  # Alanın görünen adı
-        digits='Product Price',
-        help="Bu satış satırı için manuel olarak girilebilen kar marjı yüzdesi. Satış fiyatını etkiler.",
-        store=True,  # Veritabanında saklanır
+        string='Yeni Margin (%)',  # Alanın kullanıcı arayüzünde görünecek adı
+        digits='Product Price',  # Sayısal hassasiyet ayarı
+        help="Bu satış satırı için manuel olarak girilebilen kar marjı yüzdesi. Maliyet üzerinden hesaplanır ve satış fiyatını etkiler.",
+        store=True,  # Değeri veritabanında sakla
         default=0.0,  # Varsayılan değeri sıfır
     )
 
-    # Yeni marj yüzdesi (margin_yeni) değiştiğinde price_unit'i güncelleyen onchange metodu
+    # Yeni marj yüzdesi (margin_yeni) değiştiğinde veya purchase_price değiştiğinde price_unit'i güncelleyen onchange metodu
     @api.onchange('margin_yeni', 'purchase_price')
     def _onchange_margin_yeni_update_price_unit(self):
-        # Yalnızca ürün, purchase_price ve margin_yeni geçerli değerlere sahipse hesaplama yap
-        if self.product_id and self.purchase_price is not None and self.purchase_price > 0 and self.margin_yeni is not None:
-            if self.margin_yeni >= 100.0:
-                raise UserError(
-                    _("Kar marjı %100 veya daha fazla olamaz çünkü bu durumda satış fiyatı sonsuz olur veya kar elde edilemez."))
+        # Yalnızca ürün seçili ise ve gerekli fiyat bilgileri mevcutsa işlem yap.
+        # Bu durumda, purchase_price'ın ve margin_yeni'nin None olmaması yeterli.
+        # purchase_price'ın 0'dan büyük olması, sıfır maliyetli ürünler için de geçerli olabilir,
+        # ama yüzde hesaplaması için pozitif olması genellikle beklenir.
+        if self.product_id and self.purchase_price is not None and self.margin_yeni is not None:
+            # Yeni hesaplama mantığı: price_unit = purchase_price + (purchase_price * margin_yeni / 100)
+            # Veya: price_unit = purchase_price * (1 + margin_yeni / 100)
 
-            margin_factor = (100.0 - self.margin_yeni) / 100.0
-            if margin_factor == 0:  # Eğer marj %100 ise sıfıra bölme hatasını önle
-                raise UserError(_("Kar marjı %100 olamaz. Lütfen geçerli bir yüzde girin."))
+            # Eğer kar marjı negatif olursa (indirim gibi), satış fiyatı maliyetin altına düşer.
+            # Buna izin verip vermeyeceğiniz iş gereksiniminize bağlıdır.
+            # Şu anki varsayım: negatif kar marjına izin veriyoruz, ama satış fiyatı negatif olamaz.
 
-            # price_unit'i (satış fiyatı) hesapla: purchase_price / (1 - margin_yeni / 100)
-            self.price_unit = self.purchase_price / margin_factor
+            calculated_price_unit = self.purchase_price * (1 + self.margin_yeni / 100.0)
+
+            if calculated_price_unit < 0:
+                raise UserError(_("Hesaplanan satış fiyatı negatif olamaz. Lütfen geçerli bir kar marjı girin."))
+
+            self.price_unit = calculated_price_unit
 
         elif self.product_id and self.purchase_price is not None:
-            # Eğer margin_yeni sıfırlanırsa veya ürün yoksa, price_unit'i purchase_price'a eşitle (marj sıfır)
+            # Eğer ürün ve satın alma fiyatı varsa ancak margin_yeni sıfır ise veya silinmişse,
+            # price_unit'i doğrudan purchase_price'a eşitle (yani marj sıfır kabul edilir).
             self.price_unit = self.purchase_price
         else:
+            # Ürün veya purchase_price yoksa, price_unit'i sıfır yap.
             self.price_unit = 0.0
