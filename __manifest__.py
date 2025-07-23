@@ -11,7 +11,7 @@
     'website': 'http://www.yourwebsite.com', # Kendi web sitenizi yazın
     'category': 'Sales',
     'version': '1.0',
-    'depends': ['sale_management', 'product', 'sale_margin'], # sale_margin'e bağımlı olmalı
+    'depends': ['sale_management', 'product',  'sale_margin'], # sale_margin'e bağımlı olmalı
     'data': [
         'views/sale_order_views.xml',
     ],
