@@ -1,13 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<!--    <record id="view_order_form_inherit_margin_editable" model="ir.ui.view">-->
-<!--        <field name="name">sale.order.form.inherit.margin.editable</field>-->
-<!--        <field name="model">sale.order</field>-->
-<!--        <field name="inherit_id" ref="sale.view_order_form"/>-->
-<!--        <field name="priority" eval="200"/> <field name="arch" type="xml">-->
-<!--            <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']" position="before">-->
-<!--                <field name="margin_yeni" string="Kar (%)" optional="show"/>-->
-<!--            </xpath>-->
-<!--        </field>-->
-<!--    </record>-->
+
+  <record id="view_order_form_margin_editable" model="ir.ui.view">
+    <field name="name">sale.order.form.margin.editable</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//sheet//group" position="inside">
+        <group string="Toplu Margin">
+          <field name="uniform_margin"/>
+          <button name="apply_uniform_margin" type="object" string="Satırları Güncelle" class="btn-primary"/>
+        </group>
+      </xpath>
+
+
+    </field>
+  </record>
+
+  <record model="ir.ui.view" id="sale_profit_table_view">
+    <field name="name">sale.order.profit.table.view.form</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="priority" eval="15"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='tax_totals']" position="before">
+        <div style="float: right; margin-top: 10px;" groups="base.group_user">
+          <table class="table table-sm" style="width: auto;">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Maliyet</th>
+                <th>Kâr</th>
+                <th>Toplam</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Ürün </strong></td>
+                <td><field name="product_cost_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+                <td><field name="product_profit_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+                <td><field name="product_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+              </tr>
+              <tr>
+                <td><strong>Servis </strong></td>
+                <td><field name="service_cost_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+                <td><field name="service_profit_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+                <td><field name="service_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+              </tr>
+              <tr>
+                <td><strong>İnşaat ve Makine </strong></td>
+                <td><field name="construction_cost_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+                <td><field name="construction_profit_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+                <td><field name="construction_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+              </tr>
+              <tr>
+                <td><strong>Genel Toplam</strong></td>
+                <td><field name="total_cost_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+                <td><field name="total_profit_amount" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+                <td><field name="overall_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </xpath>
+    </field>
+  </record>
+
 </odoo>
