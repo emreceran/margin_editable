@@ -42,7 +42,7 @@
                 <td><field name="product_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
               </tr>
               <tr>
-                <td><strong>Servis </strong></td>
+                <td><strong>İşçilik </strong></td>
                 <td><field name="service_cost_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
                 <td><field name="service_profit_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>
                 <td><field name="service_total" widget="monetary" options="{'currency_field': 'currency_id'}"/></td>

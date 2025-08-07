@@ -1,27 +1,22 @@
-# Byte-code files
-*.pyc
+# Python derleme dosyaları
 __pycache__/
+*.py[cod]
 
-# Odoo specific files and directories
-*.log
-.DS_Store
-*.swp
-*.bak
-*.orig
-*.rej
-/data/
-/filestore/
-/sessions/
-/run/
-/tests/
-/doc/
-/local/
-
-# Environment variables file
-.env
-
-# Editor specific files
+# IDE ve editör dosyaları
 .vscode/
 .idea/
-*.sublime-project
-*.sublime-workspace
+
+# Odoo cache ve log dosyaları
+*.log
+*.tmp
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
+
+# Paket klasörleri
+*.egg-info/
+*.eggs/
+dist/
+build/
+
