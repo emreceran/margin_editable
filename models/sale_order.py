@@ -79,8 +79,11 @@ class SaleOrder(models.Model):
     def apply_uniform_margin(self):
         for order in self:
             for line in order.order_line:
-                line.price_unit = line.purchase_price * (1 + order.uniform_margin / 100)
-                line.margin_yeni = order.uniform_margin
+                if line.product_id and line.product_id.categ_id.id == 61:
+                    pass
+                else:
+                    line.price_unit = line.purchase_price * (1 + order.uniform_margin / 100)
+                    line.margin_yeni = order.uniform_margin
 
     # 🔍 Kâr/Maliyet hesaplayıcı
     @api.depends('order_line.product_id', 'order_line.product_uom_qty', 'order_line.purchase_price', 'order_line.price_subtotal')
